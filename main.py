@@ -122,7 +122,6 @@ st.divider()
 # 7. 다섯 번째 그래프: 주요 장르별 총 관객 수 분포 (상자 그림)
 st.subheader('5. 주요 장르별 총 관객 수 분포 (상자 그림)')
 
-# 영화가 10편 이상인 장르만 필터링
 genre_counts_all = df['genre'].value_counts()
 major_genres = genre_counts_all[genre_counts_all >= 10].index
 df_major_genres = df[df['genre'].isin(major_genres)]
@@ -131,7 +130,7 @@ fig5 = px.box(
     df_major_genres,
     x='genre',
     y='total_audi',
-    hover_name='movieNm',  # 튀는 점(이상치)에 마우스를 올렸을 때 영화명이 보이도록 설정
+    hover_name='movieNm', 
     labels={
         'genre': '장르 (10편 이상)', 
         'total_audi': '총 관객 수 (명)'
@@ -150,11 +149,11 @@ fig6 = px.scatter(
     df,
     x='first_scrn',
     y='total_audi',
-    size='first_week_audi',  # 버블 크기를 개봉 첫 주 관객 수로 지정
-    color='genre',           # 장르별 색상 구분
+    size='first_week_audi',  
+    color='genre',           
     hover_name='movieNm',
-    custom_data=['first_week_audi'], # 툴팁에 활용할 추가 데이터
-    size_max=50,             # 최대 버블 크기 지정
+    custom_data=['first_week_audi'], 
+    size_max=50,             
     labels={
         'first_scrn': '개봉일 스크린 수 (개)', 
         'total_audi': '총 관객 수 (명)', 
@@ -173,21 +172,45 @@ st.divider()
 # 9. 일곱 번째 그래프: 제작 국가 및 장르별 영화 편수 (선버스트 그래프)
 st.subheader('7. 제작 국가 및 장르별 영화 편수 (선버스트 그래프)')
 
-# 영화 편수를 계산하기 위해 임시로 'movie_count' 컬럼에 1을 할당
 df['movie_count'] = 1
 
-# 플롯리 선버스트 그래프 생성
 fig7 = px.sunburst(
     df,
-    path=['nation', 'genre'],  # 안쪽 원: 제작 국가, 바깥쪽 원: 장르
-    values='movie_count'       # 칸의 크기는 영화 편수로 지정
+    path=['nation', 'genre'],
+    values='movie_count'       
 )
 
-# 마우스를 올렸을 때 깔끔하게 보이도록 툴팁 수정
 fig7.update_traces(
     hovertemplate='<b>%{label}</b><br>영화 편수: %{value}편<extra></extra>'
 )
 
 st.plotly_chart(fig7, use_container_width=True)
+st.info("💡 **이 그래프로 알 수 있는 것:** (여기에 이 그래프를 통해 발견한 사실을 한 문장으로 적어주세요.)")
+st.divider()
+
+
+# 10. 여덟 번째 그래프: 내가 만든 질문 (제작 국가별 영화 편수 도넛 그래프)
+st.subheader('8. 흥행한 영화들은 어느 나라(nation) 영화가 가장 많을까?')
+
+# 제작 국가별 영화 편수 집계
+nation_counts = df['nation'].value_counts().reset_index()
+nation_counts.columns = ['나라', '편수']
+
+# 비율을 직관적으로 보기 좋은 도넛 그래프 생성
+fig8 = px.pie(
+    nation_counts,
+    names='나라',
+    values='편수',
+    hole=0.4  # 가운데 구멍 뚫기
+)
+
+# 조각에 마우스를 올렸을 때 나라 이름과 영화 편수가 보이도록 툴팁 설정
+fig8.update_traces(
+    textposition='inside', 
+    textinfo='percent+label',
+    hovertemplate='<b>%{label}</b><br>영화 편수: %{value}편<extra></extra>'
+)
+
+st.plotly_chart(fig8, use_container_width=True)
 st.info("💡 **이 그래프로 알 수 있는 것:** (여기에 이 그래프를 통해 발견한 사실을 한 문장으로 적어주세요.)")
 st.divider()
