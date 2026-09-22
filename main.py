@@ -60,10 +60,9 @@ st.info("💡 **이 그래프로 알 수 있는 것:** (여기에 이 그래프�
 st.divider()
 
 
-# 5. 세 번째 그래프: 총 관객 수 히스토그램
+# 5. 세 번째 그래프: 총 관객 수 분포 (히스토그램)
 st.subheader('3. 총 관객 수 분포 (히스토그램)')
 
-# 플롯리 히스토그램 생성 (구간 30개로 분할)
 fig3 = px.histogram(
     df, 
     x='total_audi',
@@ -77,23 +76,48 @@ fig3.update_traces(
 st.plotly_chart(fig3, use_container_width=True)
 
 # 데이터 요약 계산 (구간 및 최고 흥행작)
-# 1) 가장 많이 몰려있는 관객 수 구간 계산
 counts, bins = np.histogram(df['total_audi'].dropna(), bins=30)
 max_bin_idx = counts.argmax()
 bin_start = bins[max_bin_idx]
 bin_end = bins[max_bin_idx + 1]
 
-# 2) 가장 관객이 많은 영화 찾기
 max_movie_row = df.loc[df['total_audi'].idxmax()]
 max_movie_name = max_movie_row['movieNm']
 max_movie_audi = max_movie_row['total_audi']
 
-# 결과 텍스트 출력
 st.markdown(f"""
 **📊 데이터 요약**
 * 대부분의 영화가 **{bin_start:,.0f}명 ~ {bin_end:,.0f}명** 구간에 몰려 있습니다. (총 {counts[max_bin_idx]}편)
 * 가장 관객이 많은 영화는 **'{max_movie_name}'** (총 {max_movie_audi:,.0f}명)입니다.
 """)
+
+st.info("💡 **이 그래프로 알 수 있는 것:** (여기에 이 그래프를 통해 발견한 사실을 한 문장으로 적어주세요.)")
+st.divider()
+
+
+# 6. 네 번째 그래프: 개봉일 스크린 수와 총 관객 수 관계 (산점도)
+st.subheader('4. 개봉일 스크린 수와 총 관객 수의 관계 (산점도)')
+
+# 플롯리 산점도 생성
+fig4 = px.scatter(
+    df,
+    x='first_scrn',
+    y='total_audi',
+    color='genre',          # 장르별로 점 색상 구분
+    hover_name='movieNm',   # 마우스 오버 시 영화명 표시
+    labels={
+        'first_scrn': '개봉일 스크린 수 (개)', 
+        'total_audi': '총 관객 수 (명)', 
+        'genre': '장르'
+    }
+)
+
+# 마우스를 올렸을 때 깔끔하게 보이도록 툴팁 수정
+fig4.update_traces(
+    hovertemplate='<b>%{hovertext}</b><br>개봉일 스크린 수: %{x:,.0f}개<br>총 관객 수: %{y:,.0f}명<extra></extra>'
+)
+
+st.plotly_chart(fig4, use_container_width=True)
 
 st.info("💡 **이 그래프로 알 수 있는 것:** (여기에 이 그래프를 통해 발견한 사실을 한 문장으로 적어주세요.)")
 st.divider()
