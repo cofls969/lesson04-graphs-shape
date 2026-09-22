@@ -146,7 +146,6 @@ st.divider()
 # 8. 여섯 번째 그래프: 개봉일 스크린 수, 총 관객 수, 첫 주 관객 수 관계 (버블 그래프)
 st.subheader('6. 스크린 수, 첫 주 관객, 총 관객 수의 관계 (버블 그래프)')
 
-# 플롯리 산점도에 size 속성을 추가하여 버블 그래프로 변환
 fig6 = px.scatter(
     df,
     x='first_scrn',
@@ -162,12 +161,33 @@ fig6 = px.scatter(
         'genre': '장르'
     }
 )
-
-# 툴팁에 첫 주 관객 수 정보가 추가로 보이도록 수정
 fig6.update_traces(
     hovertemplate='<b>%{hovertext}</b><br>개봉일 스크린 수: %{x:,.0f}개<br>총 관객 수: %{y:,.0f}명<br>첫 주 관객 수: %{customdata[0]:,.0f}명<extra></extra>'
 )
 
 st.plotly_chart(fig6, use_container_width=True)
+st.info("💡 **이 그래프로 알 수 있는 것:** (여기에 이 그래프를 통해 발견한 사실을 한 문장으로 적어주세요.)")
+st.divider()
+
+
+# 9. 일곱 번째 그래프: 제작 국가 및 장르별 영화 편수 (선버스트 그래프)
+st.subheader('7. 제작 국가 및 장르별 영화 편수 (선버스트 그래프)')
+
+# 영화 편수를 계산하기 위해 임시로 'movie_count' 컬럼에 1을 할당
+df['movie_count'] = 1
+
+# 플롯리 선버스트 그래프 생성
+fig7 = px.sunburst(
+    df,
+    path=['nation', 'genre'],  # 안쪽 원: 제작 국가, 바깥쪽 원: 장르
+    values='movie_count'       # 칸의 크기는 영화 편수로 지정
+)
+
+# 마우스를 올렸을 때 깔끔하게 보이도록 툴팁 수정
+fig7.update_traces(
+    hovertemplate='<b>%{label}</b><br>영화 편수: %{value}편<extra></extra>'
+)
+
+st.plotly_chart(fig7, use_container_width=True)
 st.info("💡 **이 그래프로 알 수 있는 것:** (여기에 이 그래프를 통해 발견한 사실을 한 문장으로 적어주세요.)")
 st.divider()
