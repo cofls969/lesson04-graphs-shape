@@ -98,26 +98,48 @@ st.divider()
 # 6. 네 번째 그래프: 개봉일 스크린 수와 총 관객 수 관계 (산점도)
 st.subheader('4. 개봉일 스크린 수와 총 관객 수의 관계 (산점도)')
 
-# 플롯리 산점도 생성
 fig4 = px.scatter(
     df,
     x='first_scrn',
     y='total_audi',
-    color='genre',          # 장르별로 점 색상 구분
-    hover_name='movieNm',   # 마우스 오버 시 영화명 표시
+    color='genre',
+    hover_name='movieNm',
     labels={
         'first_scrn': '개봉일 스크린 수 (개)', 
         'total_audi': '총 관객 수 (명)', 
         'genre': '장르'
     }
 )
-
-# 마우스를 올렸을 때 깔끔하게 보이도록 툴팁 수정
 fig4.update_traces(
     hovertemplate='<b>%{hovertext}</b><br>개봉일 스크린 수: %{x:,.0f}개<br>총 관객 수: %{y:,.0f}명<extra></extra>'
 )
 
 st.plotly_chart(fig4, use_container_width=True)
+st.info("💡 **이 그래프로 알 수 있는 것:** (여기에 이 그래프를 통해 발견한 사실을 한 문장으로 적어주세요.)")
+st.divider()
 
+
+# 7. 다섯 번째 그래프: 주요 장르별 총 관객 수 분포 (상자 그림)
+st.subheader('5. 주요 장르별 총 관객 수 분포 (상자 그림)')
+
+# 영화가 10편 이상인 장르만 필터링
+genre_counts_all = df['genre'].value_counts()
+major_genres = genre_counts_all[genre_counts_all >= 10].index
+df_major_genres = df[df['genre'].isin(major_genres)]
+
+# 플롯리 상자 그림(박스플롯) 생성
+fig5 = px.box(
+    df_major_genres,
+    x='genre',
+    y='total_audi',
+    hover_name='movieNm',  # 튀는 점(이상치)에 마우스를 올렸을 때 영화명이 보이도록 설정
+    labels={
+        'genre': '장르 (10편 이상)', 
+        'total_audi': '총 관객 수 (명)'
+    }
+)
+
+# 그래프 출력
+st.plotly_chart(fig5, use_container_width=True)
 st.info("💡 **이 그래프로 알 수 있는 것:** (여기에 이 그래프를 통해 발견한 사실을 한 문장으로 적어주세요.)")
 st.divider()
