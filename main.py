@@ -127,7 +127,6 @@ genre_counts_all = df['genre'].value_counts()
 major_genres = genre_counts_all[genre_counts_all >= 10].index
 df_major_genres = df[df['genre'].isin(major_genres)]
 
-# 플롯리 상자 그림(박스플롯) 생성
 fig5 = px.box(
     df_major_genres,
     x='genre',
@@ -139,7 +138,36 @@ fig5 = px.box(
     }
 )
 
-# 그래프 출력
 st.plotly_chart(fig5, use_container_width=True)
+st.info("💡 **이 그래프로 알 수 있는 것:** (여기에 이 그래프를 통해 발견한 사실을 한 문장으로 적어주세요.)")
+st.divider()
+
+
+# 8. 여섯 번째 그래프: 개봉일 스크린 수, 총 관객 수, 첫 주 관객 수 관계 (버블 그래프)
+st.subheader('6. 스크린 수, 첫 주 관객, 총 관객 수의 관계 (버블 그래프)')
+
+# 플롯리 산점도에 size 속성을 추가하여 버블 그래프로 변환
+fig6 = px.scatter(
+    df,
+    x='first_scrn',
+    y='total_audi',
+    size='first_week_audi',  # 버블 크기를 개봉 첫 주 관객 수로 지정
+    color='genre',           # 장르별 색상 구분
+    hover_name='movieNm',
+    custom_data=['first_week_audi'], # 툴팁에 활용할 추가 데이터
+    size_max=50,             # 최대 버블 크기 지정
+    labels={
+        'first_scrn': '개봉일 스크린 수 (개)', 
+        'total_audi': '총 관객 수 (명)', 
+        'genre': '장르'
+    }
+)
+
+# 툴팁에 첫 주 관객 수 정보가 추가로 보이도록 수정
+fig6.update_traces(
+    hovertemplate='<b>%{hovertext}</b><br>개봉일 스크린 수: %{x:,.0f}개<br>총 관객 수: %{y:,.0f}명<br>첫 주 관객 수: %{customdata[0]:,.0f}명<extra></extra>'
+)
+
+st.plotly_chart(fig6, use_container_width=True)
 st.info("💡 **이 그래프로 알 수 있는 것:** (여기에 이 그래프를 통해 발견한 사실을 한 문장으로 적어주세요.)")
 st.divider()
